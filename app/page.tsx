@@ -39,7 +39,7 @@ export default async function Home() {
           <div className=" w-full rounded-lg ">
             <img
               className=" h-[180px] xl:h-[250px] w-full object-cover rounded-lg"
-              src={`${process.env.DEPLOYED_WEBSITE}/api/stream/${video.videoId}/${video.thumbnail}`}
+              src={`/api/stream/${video.videoId}/${video.thumbnail}`}
               alt={video.title}
             />
             <div className="flex gap-2 items-start mt-2">
