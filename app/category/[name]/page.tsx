@@ -50,7 +50,7 @@ export default async function Category({
             <div className=" w-full rounded-lg ">
               <img
                 className=" h-[220px] xl:h-[250px] w-full object-cover rounded-lg"
-                src={`http://127.0.0.1:3000/api/stream/${video.videoId}/${video.thumbnail}`}
+                src={`${process.env.DEPLOYED_WEBSITE}/api/stream/${video.videoId}/${video.thumbnail}`}
                 alt={video.title}
               />
               <div className="flex gap-2 items-start mt-1">

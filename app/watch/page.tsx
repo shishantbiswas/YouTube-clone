@@ -33,7 +33,7 @@ export default async function Watch({
   if(!data){
     throw new Error('Fetching Video details failed')
   }
-  const src = `http://127.0.0.1:3000/api/stream/${searchParams.q}/index.m3u8`;
+  const src = `${process.env.DEPLOYED_WEBSITE}/api/stream/${searchParams.q}/index.m3u8`;
   const userInfo = await clerkClient.users.getUser(data.userId)
 
 
