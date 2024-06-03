@@ -66,6 +66,7 @@ export default async function Upload(data: FormData) {
 
   const hlsPlaylist = `./output/${videoId}`;
   fs.mkdirSync(hlsPlaylist, { recursive: true });
+  fs.mkdirSync('./temp', { recursive: true });
 
   // can't get multiple srcs to work ATM
   // const command = `ffmpeg -i './temp/${file.name}' \
