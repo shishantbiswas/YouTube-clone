@@ -8,14 +8,10 @@ WORKDIR /app
 RUN apk add --no-cache ffmpeg
 
 # Copy package.json and package-lock.json (or yarn.lock)
-COPY package*.json ./
+COPY package*.json ./app
 
 # Install dependencies
 RUN npm install
-
-ENV DATABASE_URI=$DATABASE_URI
-
-COPY . .
 
 # Initializing Prisma Client
 RUN npx prisma generate
