@@ -1,19 +1,17 @@
 # Use a lightweight Node.js image
-FROM node:20-alpine
+FROM node:20
 
 # Set working directory
 WORKDIR /app
 
 # Install ffmpeg
-RUN apk add --no-cache ffmpeg
+RUN apk add --RUN apt-get update && apt-get install -y ffmpeg
 
 # Copy package.json and package-lock.json (or yarn.lock)
-COPY package*.json ./
+COPY package.json package-lock.json ./
 
 # Install dependencies
 RUN npm install
-
-ENV DATABASE_URI=$DATABASE_URI
 
 COPY . .
 
