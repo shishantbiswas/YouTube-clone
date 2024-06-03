@@ -53,6 +53,7 @@ export default async function Upload(data: FormData) {
   });
 
   const tempFilePath = join("./temp", file.name);
+  fs.mkdirSync('./temp', { recursive: true });
 
   // generating id to store in s3
   const videoId = uuidv4();
@@ -66,7 +67,6 @@ export default async function Upload(data: FormData) {
 
   const hlsPlaylist = `./output/${videoId}`;
   fs.mkdirSync(hlsPlaylist, { recursive: true });
-  fs.mkdirSync('./temp', { recursive: true });
 
   // can't get multiple srcs to work ATM
   // const command = `ffmpeg -i './temp/${file.name}' \
