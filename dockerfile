@@ -5,8 +5,9 @@ FROM node:20
 WORKDIR /app
 
 # Install ffmpeg
-RUN apk add --RUN apt-get update && apt-get install -y ffmpeg
-
+RUN apk add --update && \
+    apk add --no-cache ffmpeg libx264-dev
+    
 # Copy package.json and package-lock.json (or yarn.lock)
 COPY package.json package-lock.json ./
 
