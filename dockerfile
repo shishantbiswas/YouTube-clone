@@ -1,5 +1,5 @@
 # Use a lightweight Node.js image
-FROM node:20
+FROM node:20-apline
 
 # Set working directory
 WORKDIR /app
@@ -7,7 +7,7 @@ WORKDIR /app
 # Install ffmpeg
 RUN apk add --update && \
     apk add --no-cache ffmpeg libx264-dev
-    
+
 # Copy package.json and package-lock.json (or yarn.lock)
 COPY package.json package-lock.json ./
 
