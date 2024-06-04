@@ -3,7 +3,8 @@ services:
     name: render-yt-clone
     runtime: node
     plan: free
-    buildCommand: npm run bulid
-    startCommand: npm start
+    buildCommand: npm install
+    startCommand: npm run build
     region: singapore
     branch: main
+    
