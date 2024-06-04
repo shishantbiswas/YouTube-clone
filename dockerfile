@@ -6,8 +6,7 @@ WORKDIR /app
 
 # Install ffmpeg
 RUN apk add --update && \
-    apk add --no-cache ffmpeg libx264-dev
-
+    apk add --no-cache ffmpeg
 # Copy package.json and package-lock.json (or yarn.lock)
 COPY package.json package-lock.json ./
 
