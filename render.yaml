@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: render-yt-clone
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    region: singapore
+    branch: main
+    
