@@ -1,4 +1,5 @@
-import { S3Client, GetObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
+import { Readable } from "stream";
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 
 export async function GET(request: Request) {
   const id = request.url.split("/")[5];
@@ -11,14 +12,19 @@ export async function GET(request: Request) {
   const s3BucketName = process.env.S3_BUCKET_NAME;
 
   if (
-   !s3Endpoint ||
-   !s3Region ||
-   !s3AccessKeyId ||
-   !s3SecretKey ||
-   !s3BucketName
+    !s3Endpoint ||
+    !s3Region ||
+    !s3AccessKeyId ||
+    !s3SecretKey ||
+    !s3BucketName
   ) {
     // Return a Response object with an error status and body
-    return new Response(JSON.stringify({ error: "Server configuration issue, Please Contact Support" }), { status: 500 });
+    return new Response(
+      JSON.stringify({
+        error: "Server configuration issue, Please Contact Support",
+      }),
+      { status: 500 }
+    );
   }
 
   const s3 = new S3Client({
@@ -30,32 +36,37 @@ export async function GET(request: Request) {
     },
   });
 
-  const listObjectsCommand = new ListObjectsV2Command({
-    Bucket: s3BucketName,
-    Prefix: id + "/",
-  });
-
-  const data = await s3.send(listObjectsCommand);
-
-  if (!data || data.Contents?.length === 0) {
-    // Return a Response object with an error status and body
-    return new Response(JSON.stringify({ error: "No content found" }), { status: 404 });
-  }
-
   const getRequestedFile = new GetObjectCommand({
     Bucket: s3BucketName,
     Key: `${id}/${RequestedFile}`,
   });
 
   const res = await s3.send(getRequestedFile);
+  if (!res.Body) {
+    return new Response(JSON.stringify({ error: "Failed to retrieve file" }), {
+      status: 500,
+    });
+  }
 
-  // Ensure res.Body?.transformToWebStream() returns a Response object
-  // Adjust according to how you intend to handle the response body
-  const stringData = res.Body?.transformToWebStream();
-  if (stringData) {
-    return new Response(stringData, { headers: { 'Content-Type': 'application/octet-stream' } }); // Example header
+  const buffer = await streamToBuffer(res.Body)
+
+  if (buffer) {
+    return new Response(buffer, {
+      headers: { "Content-Type": "application/octet-stream" },
+    });
   } else {
     // Handle the case where stringData is not available
-    return new Response(JSON.stringify({ error: "Failed to retrieve file" }), { status: 500 });
+    return new Response(JSON.stringify({ error: "Failed to retrieve file" }), {
+      status: 500,
+    });
   }
+}
+
+async function streamToBuffer(stream: any ): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const chunks: any[] = [];
+    stream.on("data", (chunk:Readable) => chunks.push(chunk));
+    stream.on("error", reject);
+    stream.on("end", () => resolve(Buffer.concat(chunks)));
+  });
 }

@@ -1,8 +1,8 @@
 "use client";
 import Upload from "@/actions/upload";
-import { FormError } from "@/components/form-error";
-import { FormSuccess } from "@/components/form-success";
-import { FormUploadMessage } from "@/components/form-upload-message";
+import { FormError } from "@/components/form/form-error";
+import { FormSuccess } from "@/components/form/form-success";
+import { FormUploadMessage } from "@/components/form/form-upload-message";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -21,21 +21,20 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
-import { ToastAction } from "@/components/ui/toast";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import Link from "next/link";
+import { Link } from 'next-view-transitions'
+import { toast } from "sonner";
 
 export default function UploadForm() {
   const form = useForm();
-  const { toast } = useToast();
 
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
 
-  const onsubmit = (data: FormData) => {
+  const onsubmit = async (data: FormData) => {
+
     const file = data.get("video") as File;
 
     if (file.size > 104857600) {
@@ -51,16 +50,9 @@ export default function UploadForm() {
       Upload(data).then((res) => {
         if (res?.success) {
           setSuccess(res?.success);
-          toast({
-            variant: "default",
-            title: "Upload Successfull",
+          toast("Upload Successfull",{
             description:
               "Your Video Was Successfully uploaded, you can now make edits to it.",
-            action: (
-              <ToastAction altText="Edit">
-                <Link href={`/edit`}>Edit</Link>
-              </ToastAction>
-            ),
           });
         } else setError(res?.error);
       });

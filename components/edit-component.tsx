@@ -1,6 +1,5 @@
 "use client";
-import moment from "moment";
-import Link from "next/link";
+import { Link } from 'next-view-transitions'
 import { EllipsisVerticalIcon, PencilIcon, TrashIcon } from "lucide-react";
 import {
   DropdownMenu,
@@ -23,29 +22,21 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
+import { Video } from "@prisma/client";
+import formatDateOrTime from "@/utils/format-date-or-time";
 
 export default function EditComponent({
   video,
 }: {
-  video: {
-    id: string;
-    userId: string;
-    title: string;
-    description: string;
-    thumbnail: string;
-    videoId: string;
-    category: string;
-    createdAt: Date;
-    updatedAt: Date;
-  };
+  video:Video
 }) {
 
   const router = useRouter()
   return (
     <div key={video.id} className=" w-full rounded-lg ">
       <img
-        className=" h-[220px] xl:h-[250px] w-full object-cover rounded-lg"
-        src={`api/stream/${video.videoId}/${video.thumbnail}`}
+        className=" h-[260px] sm:h-[200px] md:h-[250px]  lg:h-[230px] xl:h-[260px]  w-full object-cover rounded-lg"
+        src={`api/stream/${video.id}/${video.thumbnail}`}
         alt={video.title}
       />
       <div className="flex gap-2 items-start justify-between mt-1">
@@ -55,7 +46,7 @@ export default function EditComponent({
           </h1>
           <div className=" flex items-center gap-2">
             <p className="opacity-60 text-sm">
-              {moment(video.createdAt).format("MMMM Do YYYY")}
+              {formatDateOrTime(video.createdAt)}
             </p>
           </div>
         </div>
@@ -67,7 +58,7 @@ export default function EditComponent({
           <DropdownMenuContent>
             <DropdownMenuLabel>Options</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <Link href={`/edit/${video.id}`}>
+            <Link href={`/dashboard/${video.id}`}>
               <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
                 <PencilIcon className=" size-4 " />
                 Edit

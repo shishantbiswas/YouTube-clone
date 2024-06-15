@@ -80,7 +80,6 @@ export default async function Update(data:FormData,videoId:string) {
         data: {
           title: title,
           description: description,
-          videoId: videoId,
           category: category,
           thumbnail: image.name,
         },

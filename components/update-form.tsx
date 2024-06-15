@@ -18,18 +18,17 @@ import {
 } from "@/components/ui/select";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { FormError } from "@/components/form-error";
-import { FormSuccess } from "@/components/form-success";
-import { FormUploadMessage } from "@/components/form-upload-message";
-import { useToast } from "@/components/ui/use-toast";
+import { FormError } from "@/components/form/form-error";
+import { FormSuccess } from "@/components/form/form-success";
+import { FormUploadMessage } from "@/components/form/form-upload-message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import Update from "@/actions/update";
 import { usePathname } from "next/navigation";
+import { toast } from "sonner";
 
 export default function UpdateForm(){
     const form = useForm();
-    const { toast } = useToast();
     const pathname = usePathname();
     const videoId = pathname.split("/")[2];
   
@@ -46,9 +45,7 @@ export default function UpdateForm(){
         Update(data, videoId).then((res) => {
           if (res?.success) {
             setSuccess(res?.success);
-            toast({
-              variant: "default",
-              title: "Update Successfull",
+            toast("Update Successfull",{
               description: "Your Video Was Successfully Updated ",
             });
           } else setError(res?.error);

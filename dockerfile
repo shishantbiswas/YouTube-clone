@@ -1,29 +1,25 @@
-# Use a lightweight Node.js image
 FROM node:20-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Install ffmpeg
-RUN apk add --update && \
-    apk add --no-cache ffmpeg
-# Copy package.json and package-lock.json (or yarn.lock)
+RUN apk add --update &&  apk add --no-cache ffmpeg
+
 COPY package.json package-lock.json ./
 
-# Install dependencies
 RUN npm install
 
 COPY . .
+# Set build arguments
+ARG REDIS_URL
 
-# Initializing Prisma Client
+# Set environment variables
+ENV REDIS_URL=$REDIS_URL
+
 RUN npx prisma generate
 CMD [ "npx", "prisma", "migrate", "dev" ]
 
-# Build the Next.js app (assuming a production build)
 RUN npm run build
 
-# Expose port for Next.js app (typically 3000)
 EXPOSE 3000
 
-# Start the Next.js app
 CMD [ "npm", "start" ]

@@ -6,21 +6,22 @@ import { v4 as uuidv4 } from "uuid";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import fs from "fs";
 import { writeFile, readdir, readFile, unlink } from "fs/promises";
-import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { rimraf } from "rimraf";
+import { validateRequest } from "@/lib/auth";
 
 export default async function Upload(data: FormData) {
-  const { userId } = auth();
-  // user check
-  if (!userId) {
-    return { error: "You are not Authenticated !" };
+  
+  const userId  = await validateRequest()
+
+  if (!userId.user?.id) {
+    return { error: "You are not Authorized !" };
   }
-  const file: File | null = data.get("video") as unknown as File;
+  const file = data.get("video") as unknown as File;
   const description = data.get("description") as string;
   const title = data.get("title") as string;
   const category = data.get("category") as string;
-  const image: File | null = data.get("image") as unknown as File;
+  const image = data.get("image") as unknown as File;
 
   // file validation
   if (!file.size) return { error: "No file Attached" };
@@ -67,13 +68,6 @@ export default async function Upload(data: FormData) {
 
   const hlsPlaylist = `./output/${videoId}`;
   fs.mkdirSync(hlsPlaylist, { recursive: true });
-
-  // can't get multiple srcs to work ATM
-  // const command = `ffmpeg -i './temp/${file.name}' \
-  // -vf "scale=1280:-1" -c:v libx264 -preset slow -b:v 2500k -maxrate 2500k -bufsize 5000k -hls_time 6 -hls_list_size 0 -f hls ./output/${videoId}/1280p.m3u8 \
-  // -vf "scale=854:-1" -c:v libx264 -preset slow -b:v 1500k -maxrate 1500k -bufsize 3000k -hls_time 6 -hls_list_size 0 -f hls ./output/${videoId}/854p.m3u8 \
-  // -vf "scale=640:-1" -c:v libx264 -preset slow -b:v 800k -maxrate 800k -bufsize 1600k -hls_time 6 -hls_list_size 0 -f hls ./output/${videoId}/640p.m3u8
-  // `;
 
   const command = `ffmpeg -i './temp/${file.name}' -vf "scale=1280:-1" -c:v libx264 -preset slow -b:v 2500k -maxrate 2500k -bufsize 5000k -hls_time 6 -hls_list_size 0 -f hls ./output/${videoId}/index.m3u8  `;
 
@@ -142,10 +136,10 @@ export default async function Upload(data: FormData) {
 
   await db.video.create({
     data: {
+      id:videoId,
       title: title,
-      userId: userId,
       description: description,
-      videoId: videoId,
+      userId: userId.user?.id,
       category: category,
       thumbnail: image.name,
     },
